@@ -17,9 +17,9 @@
 
 ### 完整项目获取
 
-通过网盘分享的文件：图书管理系统
+通过网盘分享的文件：前后端图书管理系统
 
-链接: https://pan.baidu.com/s/1wdjUUE1YVphZdnDjsisuHw?pwd=idcv 提取码: idcv
+链接: https://pan.baidu.com/s/1LjRSxGJyu-_zMBRbDe2I2A?pwd=yc7y 提取码: yc7y 
 --来自百度网盘超级会员v3的分享
 
 通过网盘分享的文件：工具包
