@@ -1,0 +1,34 @@
+package cn.kmbeast.pojo.entity;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+/**
+ * 黑名单实体类
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Blacklist {
+    /**
+     * 主键
+     */
+    private Integer id;
+    /**
+     * 用户ID
+     */
+    private Integer userId;
+    /**
+     * 事由
+     */
+    private String detail;
+    /**
+     * 创建时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+}

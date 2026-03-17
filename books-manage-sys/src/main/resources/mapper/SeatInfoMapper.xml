@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.SeatInfoMapper">
+
+    <insert id="save">
+        INSERT INTO seat_info (classroom_id, number, status, create_time)
+        VALUES (#{classroomId}, #{number}, #{status}, #{createTime})
+    </insert>
+
+    <update id="update">
+        UPDATE seat_info
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="number != null">
+                number = #{number},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM seat_info WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="query" resultMap="BaseResultMap">
+
+        SELECT si.*,
+               c.name AS classroom_name,
+               c.cover AS classroom_cover
+        FROM seat_info si
+        LEFT JOIN classroom c ON c.id = si.classroom_id
+        <where>
+            <if test="classroomId != null">
+                AND si.classroom_id = #{classroomId}
+            </if>
+            <if test="number != null">
+                AND si.number = #{number}
+            </if>
+            <if test="status != null">
+                AND si.status = #{status}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND si.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY si.create_time DESC
+        <if test="current != null and size != null">
+            LIMIT #{current},#{size}
+        </if>
+    </select>
+
+    <select id="queryCount" resultType="integer">
+
+        SELECT COUNT(*)
+        FROM seat_info si
+        <where>
+            <if test="classroomId != null">
+                AND si.classroom_id = #{classroomId}
+            </if>
+            <if test="number != null">
+                AND si.number = #{number}
+            </if>
+            <if test="status != null">
+                AND si.status = #{status}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND si.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+    </select>
+
+    <resultMap id="BaseResultMap" type="cn.kmbeast.pojo.vo.SeatInfoVO">
+        <id column="id" property="id"/>
+        <result column="classroom_id" property="classroomId"/>
+        <result column="classroom_name" property="classroomName"/>
+        <result column="classroom_cover" property="classroomCover"/>
+        <result column="number" property="number"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+</mapper>

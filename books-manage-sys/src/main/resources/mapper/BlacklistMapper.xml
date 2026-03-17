@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.BlacklistMapper">
+
+    <insert id="save">
+        INSERT INTO blacklist (user_id, detail,create_time)
+        VALUES (#{userId}, #{detail},#{createTime})
+    </insert>
+
+    <update id="update">
+        UPDATE blacklist
+        <set>
+            <if test="detail != null and detail != ''">
+                detail = #{detail},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM blacklist WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="query" resultMap="BaseResultMap">
+
+        SELECT bl.*,
+               u.user_avatar,
+               u.user_name,
+               u.user_account
+        FROM blacklist bl
+        LEFT JOIN user u ON u.id = bl.user_id
+        <where>
+            <if test="userId != null">
+                bl.user_id = #{userId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND bl.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY bl.create_time DESC
+        <if test="current != null and size != null">
+            LIMIT #{current},#{size}
+        </if>
+    </select>
+
+    <select id="queryCount" resultType="integer">
+
+        SELECT COUNT(*)
+        FROM blacklist bl
+        <where>
+            <if test="userId != null">
+                bl.user_id = #{userId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND bl.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+    </select>
+
+    <resultMap id="BaseResultMap" type="cn.kmbeast.pojo.vo.BlacklistVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_avatar" property="userAvatar"/>
+        <result column="user_name" property="userName"/>
+        <result column="detail" property="detail"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+</mapper>

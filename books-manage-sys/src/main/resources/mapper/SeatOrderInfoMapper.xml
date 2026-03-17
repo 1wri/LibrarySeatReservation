@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kmbeast.mapper.SeatOrderInfoMapper">
+
+    <insert id="save">
+        INSERT INTO seat_order_info (user_id, seat_info_id, date, time_split, sign_in_time, order_status, create_time)
+        VALUES
+        <foreach collection="seatOrderInfos" item="seatOrderInfo" index="index" separator=",">
+            (#{seatOrderInfo.userId}, #{seatOrderInfo.seatInfoId}, #{seatOrderInfo.date}, #{seatOrderInfo.timeSplit}, #{seatOrderInfo.signInTime}, #{seatOrderInfo.orderStatus}, #{seatOrderInfo.createTime})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE seat_order_info
+        <set>
+            <if test="signInTime != null">
+                sign_in_time = #{signInTime},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM seat_order_info WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="query" resultMap="BaseResultMap">
+
+        SELECT soi.*,
+        u.user_avatar,
+        u.user_name,
+        u.user_account,
+        si.number AS seat_number,
+        c.id AS classroom_id,
+        c.cover AS classroom_cover,
+        c.name AS classroom_name
+        FROM seat_order_info soi
+        LEFT JOIN user u ON u.id = soi.user_id
+        LEFT JOIN seat_info si ON si.id = soi.seat_info_id
+        LEFT JOIN classroom c ON c.id = si.classroom_id
+        <where>
+            <if test="userId != null">
+                AND soi.user_id = #{userId}
+            </if>
+            <if test="seatInfoId != null">
+                AND soi.seat_info_id = #{seatInfoId}
+            </if>
+            <if test="date != null and date != ''">
+                AND soi.date = #{date}
+            </if>
+            <if test="orderStatus != null">
+                AND soi.order_status = #{orderStatus}
+            </if>
+            <if test="signInStartTime != null and signInEndTime != null">
+                AND soi.sign_in_time BETWEEN #{signInStartTime} AND #{signInEndTime}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND soi.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+        ORDER BY soi.create_time DESC
+        <if test="current != null and size != null">
+            LIMIT #{current},#{size}
+        </if>
+    </select>
+
+    <select id="queryCount" resultType="integer">
+
+        SELECT COUNT(*)
+        FROM seat_order_info soi
+        <where>
+            <if test="userId != null">
+                AND soi.user_id = #{userId}
+            </if>
+            <if test="seatInfoId != null">
+                AND soi.seat_info_id = #{seatInfoId}
+            </if>
+            <if test="date != null and date != ''">
+                AND soi.date = #{date}
+            </if>
+            <if test="timeSplit != null and timeSplit != ''">
+                AND soi.time_split = #{timeSplit}
+            </if>
+            <if test="orderStatus != null">
+                AND soi.order_status = #{orderStatus}
+            </if>
+            <if test="signInStartTime != null and signInEndTime != null">
+                AND soi.sign_in_time BETWEEN #{signInStartTime} AND #{signInEndTime}
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND soi.create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+        </where>
+
+    </select>
+
+    <select id="queryByUserIds" resultType="cn.kmbeast.pojo.vo.SeatOrderNoSignVO">
+
+        SELECT
+            user_id AS userId,
+            COUNT(id) AS countNumber
+        FROM seat_order_info
+        WHERE user_id IN
+        <foreach collection="userIds" item="id" open="(" close=")" separator="," index="index">
+            #{id}
+        </foreach>
+        AND order_status = #{orderStatus}
+
+    </select>
+
+    <resultMap id="BaseResultMap" type="cn.kmbeast.pojo.vo.SeatOrderInfoVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_account" property="userAccount"/>
+        <result column="user_avatar" property="userAvatar"/>
+        <result column="user_name" property="userName"/>
+        <result column="seat_info_id" property="seatInfoId"/>
+        <result column="seat_number" property="seatNumber"/>
+        <result column="classroom_id" property="classroomId"/>
+        <result column="classroom_name" property="classroomName"/>
+        <result column="classroom_cover" property="classroomCover"/>
+        <result column="date" property="date"/>
+        <result column="time_split" property="timeSplit"/>
+        <result column="sign_in_time" property="signInTime"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+</mapper>
