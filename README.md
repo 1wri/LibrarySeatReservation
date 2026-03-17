@@ -1,0 +1,2 @@
+# LibrarySeatReservation
+图书馆座位预约管理系统，基于springboot+vue的图书馆座位预约管理系统，java项目
